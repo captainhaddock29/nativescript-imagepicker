@@ -12,11 +12,14 @@ export class AppComponent {
     thumbSize: number = 80;
     previewSize: number = 300;
 
+    listMIME: Array<string>= [];
+
     public onSelectMultipleTap() {
         this.isSingleMode = false;
 
         let context = imagepicker.create({
-            mode: "multiple"
+            mode: "multiple",
+            listExtensions: ["png", "pdf"]
         });
         this.startSelection(context);
     }

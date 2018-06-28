@@ -73,6 +73,8 @@ interface Options {
          */
         read_external_storage?: string;
     };
+
+    listExtensions? : Array<string>;
 }
 
 /**

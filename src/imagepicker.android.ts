@@ -133,18 +133,19 @@ export class ImagePicker {
         return new Promise((resolve, reject) => {
 
             // WARNING: If we want to support multiple pickers we will need to have a range of IDs here:
-            let RESULT_CODE_PICKER_IMAGES = 9192;
+            let RESULT_CODE_PICKER_IMAGES = 1;
 
             let application = require("application");
             application.android.on(application.AndroidApplication.activityResultEvent, onResult);
+
+
+
 
             function onResult(args) {
 
                 let requestCode = args.requestCode;
                 let resultCode = args.resultCode;
                 let data = args.intent;
-
-                if (requestCode === RESULT_CODE_PICKER_IMAGES) {
                     if (resultCode === android.app.Activity.RESULT_OK) {
 
                         try {
@@ -165,8 +166,14 @@ export class ImagePicker {
                                 }
                             } else {
                                 let uri = data.getData();
-                                let selectedAsset = new imageAssetModule.ImageAsset(UriHelper._calculateFileUri(uri));
-                                results.push(selectedAsset);
+                                let res = UriHelper._calculateFileUri(uri);
+                                let selectedAsset = new imageAssetModule.ImageAsset(res);
+                                const re = /(?:\.([^.]+))?$/;
+                                let ext = re.exec(res)[1];
+                                let listExtensions = ["pdf", "doc", "docx", "odt", "rtf", "jpg", "jpeg", "png"];
+                                if ( ext !== undefined && (listExtensions.indexOf(ext) > -1)) {
+                                    results.push(selectedAsset);
+                                }
                             }
 
                             application.android.off(application.AndroidApplication.activityResultEvent, onResult);
@@ -184,12 +191,11 @@ export class ImagePicker {
                         reject(new Error("Image picker activity result code " + resultCode));
                         return;
                     }
-                }
             }
 
             let Intent = android.content.Intent;
             let intent = new Intent();
-            intent.setType("image/*");
+            intent.setType("*/*");
 
             // TODO: Use (<any>android).content.Intent.EXTRA_ALLOW_MULTIPLE
             if (this.mode === 'multiple') {
